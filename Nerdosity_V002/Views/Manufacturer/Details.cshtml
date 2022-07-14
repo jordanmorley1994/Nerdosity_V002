@@ -1,0 +1,31 @@
+﻿@model Manufacturer
+
+@{
+    ViewData["Title"] = " | Manufacturer";
+}
+
+<h1>Manufacturer</h1>
+
+<table class="table table-bordered table-sm">
+    <thead>
+        <tr class="thead-dark">
+            <th>@Model.Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @foreach (var pm in Model.ProductManufacturers)
+                {
+                    <p>
+                        <a asp-action="Details" asp-controller="Product"
+                           asp-route-id="@pm.ProductId"
+                           asp-route-slug="@pm.Product.Name.Slug()">
+                            @pm.Product.Name
+                        </a>
+                    </p>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>

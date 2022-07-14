@@ -1,0 +1,71 @@
+﻿@model ManufacturerListViewModel
+@{
+    ViewData["Title"] = " | Manufacturer Catalog";
+
+    RouteDictionary current = Model.CurrentRoute;
+    RouteDictionary routes = Model.CurrentRoute.Clone();
+}
+
+<h1>Manufacturer Catalog</h1>
+
+<table class="table table-bordered table-striped table-sm">
+
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(Manufacturer.Name), current); }
+                <a asp-action="List" asp-all-route-data="@routes"
+                   class="text-white">Name</a>
+            </th>
+            <th>
+                @{ routes.SetSortAndDirection(nameof(Manufacturer.Address), current); }
+                <a asp-action="List" asp-all-route-data="@routes"
+                   class="text-white">Address</a>
+            </th>
+            <th>Product(s)</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Manufacturer manufacturer in Model.Manufacturers)
+        {
+            <tr>
+                <td>
+                    <a asp-action="Details" asp-route-id="@manufacturer.ManufacturerId"
+                       asp-route-slug="@manufacturer.Name.Slug()">
+                        @manufacturer.Name
+                    </a>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@manufacturer.ManufacturerId"
+                       asp-route-slug="@manufacturer.Name.Slug()">
+                        @manufacturer.Address
+                    </a>
+                </td>
+                <td>
+                    @foreach (var pm in manufacturer.ProductManufacturers)
+                    {
+                        <p>
+                            <a asp-action="Details" asp-controller="Product"
+                               asp-route-id="@pm.ProductId"
+                               asp-route-slug="@pm.Product.Name.Slug()">
+                                @pm.Product.Name
+                            </a>
+                        </p>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@{
+
+    routes = Model.CurrentRoute.Clone();
+
+    for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        routes.PageNumber = i;
+        <a asp-action="List" asp-all-route-data="@routes"
+           class="btn btn-outline-primary @Nav.Active(i, current.PageNumber)">@i</a>
+    }
+}
+

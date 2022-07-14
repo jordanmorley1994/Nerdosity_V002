@@ -1,0 +1,118 @@
+﻿@{
+    var cart = new Cart(Context);
+
+    var current = ViewContext.RouteData.Values["area"]?.ToString() ??
+        ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nerdosity @ViewBag.Title</title>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/css/Lux.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+
+
+    @RenderSection("scripts", false)
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#menu"
+                    aria-controls="menu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menu">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item @Nav.Active("Home", current)">
+                        <a class="nav-link" asp-action="Index" asp-controller="Home" asp-area="">
+                            <span class="fas fa-home"></span>&nbsp;Home
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("Product", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Product" asp-area="">
+                            <span class="fas fa-book-open"></span>&nbsp;Products
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("Manufacturer", current)">
+                        <a class="nav-link" asp-action="List" asp-controller="Manufacturer" asp-area="">
+                            <span class="fas fa-feather-alt"></span>&nbsp;Manufacturer
+                        </a>
+                    </li>
+                    <li class="nav-item @Nav.Active("About", current)">
+                        <a class="nav-link" asp-action="About" asp-controller="Home" asp-area="">
+                            <span class="fas fa-feather-alt"></span>&nbsp;About
+                        </a>
+                    </li>
+
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item @Nav.Active("Cart", current)">
+                        <a class="nav-link" asp-action="Index" asp-controller="Cart" asp-area="">
+                            <span class="fas fa-shopping-cart"></span>&nbsp;Cart
+                            <span class="badge badge-light">@cart.Count</span>
+                        </a>
+                    </li>
+
+                    @using Microsoft.AspNetCore.Identity
+                    @inject SignInManager<User> signInManager
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <li class="nav-item">
+                            <form method="post" asp-action="LogOut" asp-controller="Account"
+                                  asp-area="">
+                                <input type="submit" value="Log Out"
+                                       class="btn btn-outline-light" />
+                                <span class="text-light">@User.Identity.Name</span>
+                            </form>
+                        </li>
+                    }
+                    else
+                    {
+                        var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+                        // anonymous user - Register link and Log In button
+                        <li class="nav-item @Nav.Active("Register", action)">
+                            <a asp-action="Register" asp-controller="Account"
+                               asp-area="" class="nav-link">
+                                <span class="fas fa-edit"></span>&nbsp;Register
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="Login" asp-controller="Account"
+                               asp-area="" class="btn btn-outline-light">Log In</a>
+                        </li>
+                    }
+
+                    <li class="nav-item @Nav.Active("Admin", current)">
+                        <a class="nav-link" asp-action="Index" asp-controller="Product" asp-area="Admin">
+                            <span class="fas fa-cog"></span>&nbsp;Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <header class="jumbotron text-center">
+            <a asp-action="Index" asp-controller="Home">
+                <img src="~/images/Nerdosity-logos.jpeg" class="img-fluid center-block" />
+            </a>
+        </header>
+        <main>
+            @if (TempData.Keys.Contains("message"))
+            {
+                <h4 class="bg-info text-center text-white p-2">@TempData["message"]</h4>
+            }
+            @RenderBody()
+        </main>
+    </div>
+
+</body>
+</html>
